@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SONORA — Music</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #101010;
+    color: white;
+    font-family: Arial, sans-serif;
+    padding: 35px 8%;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #303030;
+    padding-bottom: 20px;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+    letter-spacing: 5px;
+}
+
+header span {
+    color: #888;
+    font-size: 12px;
+}
+
+main {
+    max-width: 850px;
+    margin: 65px auto;
+}
+
+h1 {
+    font-size: clamp(35px, 7vw, 65px);
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #888;
+    margin-bottom: 35px;
+}
+
+input {
+    width: 100%;
+    padding: 16px;
+    background: #1b1b1b;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.music {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #292929;
+    padding: 20px 5px;
+}
+
+.music small {
+    color: #888;
+}
+
+button {
+    cursor: pointer;
+    background: white;
+    color: black;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 22px;
+    font-weight: bold;
+}
+
+.player {
+    margin-top: 40px;
+    padding: 25px;
+    background: #1b1b1b;
+    border-radius: 12px;
+}
+
+#track {
+    color: #aaa;
+    margin-bottom: 18px;
+}
+
+audio {
+    width: 100%;
+}
+
+footer {
+    text-align: center;
+    color: #555;
+    margin-top: 80px;
+    font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">SONORA.</div>
+    <span>MUSIC DISCOVERY</span>
+</header>
+
+<main>
+    <h1>Encuentra tu sonido.</h1>
+    <p class="subtitle">
+        Un espacio para descubrir y escuchar música.
+    </p>
+
+    <input
+        type="text"
+        id="search"
+        placeholder="Buscar canciones..."
+    >
+
+    <h3>Tu biblioteca</h3>
+
+    <label for="files">
+        <button type="button">+ Agregar música</button>
+    </label>
+
+    <input type="file" id="files" accept="audio/*" multiple hidden>
+
+    <div id="library">
+        <p style="color:#777">Todavía no tienes canciones.</p>
+    </div>
+
+    <div class="player">
+        <div id="track">Selecciona una canción</div>
+        <audio id="audio" controls></audio>
+    </div>
+</main>
+
+<footer>
+    SONORA © 2026 — YOUR MUSIC SPACE
+</footer>
+
+<script>
+const files = document.getElementById("files");
+const library = document.getElementById("library");
+const audio = document.getElementById("audio");
+const track = document.getElementById("track");
+const search = document.getElementById("search");
+
+let songs = [];
+
+files.addEventListener("change", () => {
+    for (const file of files.files) {
+        songs.push({
+            name: file.name,
+            url: URL.createObjectURL(file)
+        });
+    }
+    render();
+});
+
+function render() {
+    library.innerHTML = "";
+
+    const filtered = songs.filter(song =>
+        song.name.toLowerCase().includes(search.value.toLowerCase())
+    );
+
+    if (filtered.length === 0) {
+        library.innerHTML =
+            '<p style="color:#777">No hay canciones.</p>';
+        return;
+    }
+
+    filtered.forEach(song => {
+        const item = document.createElement("div");
+        item.className = "music";
+
+        const name = document.createElement("span");
+        name.textContent = song.name;
+
+        const button = document.createElement("button");
+        button.textContent = "Escuchar";
+
+        button.addEventListener("click", () => {
+            audio.src = song.url;
+            track.textContent = song.name;
+            audio.play();
+        });
+
+        item.append(name, button);
+        library.appendChild(item);
+    });
+}
+
+search.addEventListener("input", render);
+</script>
+
+</body>
+</html>
